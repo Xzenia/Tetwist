@@ -8,6 +8,11 @@ class GameViewController: UIViewController, TetrisDelegate, UIGestureRecognizerD
     
     var panPointReference:CGPoint?
     
+    var linesRemoved = 0
+    
+    @IBOutlet weak var LinesCounterLabel: UILabel!
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -37,7 +42,7 @@ class GameViewController: UIViewController, TetrisDelegate, UIGestureRecognizerD
 
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(didPan))
         self.view.addGestureRecognizer(panGesture)
-        
+        LinesCounterLabel.text = "Lines: \(linesRemoved)"
     }
     
     func didTick() {
@@ -102,6 +107,8 @@ class GameViewController: UIViewController, TetrisDelegate, UIGestureRecognizerD
         
         scene.animateCollapsingLines(linesToRemove: tetris.removeAllBlocks(), fallenBlocks: tetris.removeAllBlocks()) {
             tetris.beginGame()
+            self.linesRemoved = 0
+            self.LinesCounterLabel.text = "Lines: \(self.linesRemoved)"
         }
     }
     
@@ -127,6 +134,8 @@ class GameViewController: UIViewController, TetrisDelegate, UIGestureRecognizerD
         let removedLines = tetris.removeCompletedLines()
         if removedLines.linesRemoved.count > 0 {
             scene.animateCollapsingLines(linesToRemove: removedLines.linesRemoved, fallenBlocks:removedLines.fallenBlocks) {
+                self.linesRemoved += removedLines.linesRemoved.count
+                self.LinesCounterLabel.text = "Lines: \(self.linesRemoved)"
                 self.gameShapeDidLand(Tetris: tetris)
             }
         } else {
